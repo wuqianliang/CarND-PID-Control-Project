@@ -32,11 +32,16 @@ int main()
 {
   uWS::Hub h;
 
-  PID pid;
+  PID pid_steer;
+  PID pid_throttle;
   // TODO: Initialize the pid variable.
-  pid.Init(0.2, 0.004, 3.0);
+  //pid_steer.Init(0.2, 0.004, 3.0);
+  pid_steer.Init(0.1,0.01,3.0);
+  pid_steer.is_twiddle=true;
+  pid_throttle.Init(0.2, 0.004, 3.0);
+  pid_throttle.is_twiddle=true;
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&pid_steer,&pid_throttle](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -60,20 +65,23 @@ int main()
           */
           
           // Update error values with cte
-          pid.UpdateError(cte);
+          pid_steer.UpdateError(cte);
 
           // Calculate steering value (if reasonable error, returns between [-1, 1])
-          steer_value = pid.TotalError();
+          steer_value = pid_steer.TotalError();
 
+
+          pid_throttle.UpdateError(fabs(cte));
           // Make throttle  big when steer value is big to make safety driving 
-          double throttle = steer_value *0.3+0.3;
-          json msgJson;
-          msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = throttle;
+          double throttle = (1- fabs(pid_throttle.TotalError()))*0.3+0.3;
+          //double throttle = 0.3; //(1- fabs(steer_value)) *0.3+0.3;
           
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << " Throttle: "<< throttle << std::endl;
 
+          json msgJson;
+          msgJson["steering_angle"] = steer_value;
+          msgJson["throttle"] = throttle;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           //std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
