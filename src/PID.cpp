@@ -25,7 +25,7 @@ void PID::Init(double Kp, double Ki, double Kd) {
     step = 1;
     i_th_dp = 2;  // this will wrao back to 0 after the first twiddle loop
     n_settle_steps = 100;
-    n_eval_steps = 100;
+    n_eval_steps = 500;
     update_error = 0;
     best_error = std::numeric_limits<double>::max();
     tried_adding = false; 

@@ -36,12 +36,23 @@ int main()
   PID pid_throttle;
   // TODO: Initialize the pid variable.
   //pid_steer.Init(0.2, 0.004, 3.0);
-  pid_steer.Init(0.1,0.01,3.0);
-  pid_steer.is_twiddle=true;
-  pid_throttle.Init(0.2, 0.004, 3.0);
-  pid_throttle.is_twiddle=true;
+  // Mannual tuning P,I,D
+  //pid_steer.Init(0.1,0.0001,1.0); //40mph  throttle=0.3
+  //pid_steer.Init(0.1,0.0001,2.0); //33mph
+  //pid_steer.Init(0.1,0.001,2.0);
+  //pid_steer.Init(0.1,0.0001,0.1);
+  //pid_steer.Init(0.01,0.0005,1.0);
+  //pid_steer.Init(0.01,0.001,2.0);
+  //pid_steer.Init(0.1,0.001,1.0);
+  //pid_steer.Init(0.1,0.00005,0.8); //43mph  throttle=0.5
+  //pid_steer.Init(0.1,0.00005,3.0); //28mph  throttle=0.5
+  //pid_steer.Init(0.05,0.00005,3.0); //33mph  throttle=0.5
+  //pid_steer.Init(0.05,0.00005,0.5); //43mph smoothly,  throttle = (1- fabs(steer_value))*0.3+0.1;
+  //pid_steer.Init(0.04,0.0004,0.4); //50mph smoothly,big turn failed,  throttle = (1- fabs(steer_value))*0.3+0.2;
+  //pid_steer.Init(0.04,0.003,0.4); //53mph smoothly,big turn success, occasionly failed, throttle = (1- fabs(steer_value))*0.3+0.2;
+  pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
 
-  h.onMessage([&pid_steer,&pid_throttle](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&pid_steer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -71,10 +82,8 @@ int main()
           steer_value = pid_steer.TotalError();
 
 
-          pid_throttle.UpdateError(fabs(cte));
-          // Make throttle  big when steer value is big to make safety driving 
-          double throttle = (1- fabs(pid_throttle.TotalError()))*0.3+0.3;
-          //double throttle = 0.3; //(1- fabs(steer_value)) *0.3+0.3;
+          // 
+          double throttle = (1- fabs(steer_value))*0.3+0.2;
           
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << " Throttle: "<< throttle << std::endl;
