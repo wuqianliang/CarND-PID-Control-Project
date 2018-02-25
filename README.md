@@ -55,6 +55,7 @@ In order to speed up,I use  fomula `(1- |steer_value|)*0.3+0.2` to set throttole
   
   pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
 `
+
 and found (Kp,Ki,Kd) (0.03,0.004,0.5) with `throttle = (1- fabs(steer_value))*0.3+0.2` setting making car running smoothly and robust.
 
 ## Tuning P.I.D parameters via twiddle
