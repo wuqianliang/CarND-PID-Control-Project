@@ -58,3 +58,9 @@ First I mannual tune to get a (0.03,0.004,0.5), then I run several time via the 
 1. twiddle tuning
 2. set tuned parameters into  initial param for the next twiddle tune
 and get a final parameer: 
+
+
+The twiddle tuning step:
+P: 0.0297, I: 0.004036, D: 0.505
+P: 0.0294327, I: 0.00406869, D: 0.504546
+
