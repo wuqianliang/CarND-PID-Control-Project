@@ -28,18 +28,31 @@ The "D" for derivate is the change in CTE from one value to the next. This means
 In order to speed up,I use  fomula `(1- |steer_value|)*0.3+0.2` to set throttole, which means when CTE is high,the throttle will be changed to small to slow down car's speed.I test P.I.D parameters tuning via the following steps:
 `
   //pid_steer.Init(0.1,0.0001,1.0); //40mph  throttle=0.3
+  
   //pid_steer.Init(0.1,0.0001,2.0); //33mph
+  
   //pid_steer.Init(0.1,0.001,2.0);
+  
   //pid_steer.Init(0.1,0.0001,0.1);
+  
   //pid_steer.Init(0.01,0.0005,1.0);
+  
   //pid_steer.Init(0.01,0.001,2.0);
+  
   //pid_steer.Init(0.1,0.001,1.0);
+  
   //pid_steer.Init(0.1,0.00005,0.8); //43mph  throttle=0.5
+  
   //pid_steer.Init(0.1,0.00005,3.0); //28mph  throttle=0.5
+  
   //pid_steer.Init(0.05,0.00005,3.0); //33mph  throttle=0.5
+  
   //pid_steer.Init(0.05,0.00005,0.5); //43mph smoothly,  throttle = (1- fabs(steer_value))*0.3+0.1;
+  
   //pid_steer.Init(0.04,0.0004,0.4); //50mph smoothly,big turn failed,  throttle = (1- fabs(steer_value))*0.3+0.2;
+  
   //pid_steer.Init(0.04,0.003,0.4); //53mph smoothly,big turn success, occasionly failed, throttle = (1- fabs(steer_value))*0.3+0.2;
+  
   pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
 `
 and found (Kp,Ki,Kd) (0.03,0.004,0.5) with `throttle = (1- fabs(steer_value))*0.3+0.2` setting making car running smoothly and robust.
