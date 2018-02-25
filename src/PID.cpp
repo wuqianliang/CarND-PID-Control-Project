@@ -21,11 +21,11 @@ void PID::Init(double Kp, double Ki, double Kd) {
 
     // Twiddling parameters
     is_twiddle = false;
-    dp = {0.1*Kp,0.1*Kd,0.1*Ki};
+    dp = {0.5*Kp,0.05*Kd,0.5*Ki};
     step = 1;
     i_th_dp = 2;  // this will wrao back to 0 after the first twiddle loop
-    n_settle_steps = 200;
-    n_eval_steps = 200;
+    n_settle_steps = 100;
+    n_eval_steps = 400;
     update_error = 0;
     best_error = std::numeric_limits<double>::max();
     tried_adding = false; 
@@ -49,7 +49,7 @@ void PID::UpdateError(double cte) {
     if (is_twiddle && step % (n_eval_steps + n_settle_steps) == 0){
         
 
-        update_error /= n_eval_steps*1.0;
+        //update_error /= n_eval_steps*1.0;
 
         cout << "step: " << step << endl;
         cout << "total error: " << update_error << endl;
@@ -97,6 +97,7 @@ double PID::TotalError() {
 }
 
 void PID::Update_Parameter_At_i_th(int index, double delta) {
+
     if (index == 0) {
         Kp += delta;
     }

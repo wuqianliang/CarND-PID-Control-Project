@@ -49,10 +49,10 @@ int main()
   //pid_steer.Init(0.05,0.00005,0.5); //43mph smoothly,  throttle = (1- fabs(steer_value))*0.3+0.1;
   //pid_steer.Init(0.04,0.0004,0.4); //50mph smoothly,big turn failed,  throttle = (1- fabs(steer_value))*0.3+0.2;
   //pid_steer.Init(0.04,0.003,0.4); //53mph smoothly,big turn success, occasionly failed, throttle = (1- fabs(steer_value))*0.3+0.2;
-  pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
-
+  //pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
+  pid_steer.Init(0.028125,0.0042378,0.4545);
   // Twiddle 
-  pid_steer.is_twiddle=true;
+  //pid_steer.is_twiddle=true;
 
 
   h.onMessage([&pid_steer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
@@ -87,9 +87,8 @@ int main()
 
           // 
           double throttle = (1- fabs(steer_value))*0.3+0.2;
-          
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << " Throttle: "<< throttle << std::endl;
+          std::cout << speed << " CTE: " << cte << " Steering Value: " << steer_value << " Throttle: "<< throttle << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
