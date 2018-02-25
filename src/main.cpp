@@ -35,7 +35,6 @@ int main()
   PID pid_steer;
   PID pid_throttle;
   // TODO: Initialize the pid variable.
-  //pid_steer.Init(0.2, 0.004, 3.0);
   // Mannual tuning P,I,D
   //pid_steer.Init(0.1,0.0001,1.0); //40mph  throttle=0.3
   //pid_steer.Init(0.1,0.0001,2.0); //33mph
@@ -51,6 +50,10 @@ int main()
   //pid_steer.Init(0.04,0.0004,0.4); //50mph smoothly,big turn failed,  throttle = (1- fabs(steer_value))*0.3+0.2;
   //pid_steer.Init(0.04,0.003,0.4); //53mph smoothly,big turn success, occasionly failed, throttle = (1- fabs(steer_value))*0.3+0.2;
   pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
+
+  // Twiddle 
+  pid_steer.is_twiddle=true;
+
 
   h.onMessage([&pid_steer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
