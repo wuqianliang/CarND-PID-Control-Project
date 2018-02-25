@@ -67,3 +67,7 @@ P: 0.0297, I: 0.004036, D: 0.505
 P: 0.0294327, I: 0.00406869, D: 0.504546
 
 P: 0.028215, I: 0.0042378, D: 0.4545
+
+#### Reference
+
+https://github.com/jeremy-shannon/CarND-PID-Control-Project
