@@ -52,14 +52,13 @@ Because my  starting parameters point (0.03,0.004,0.5) is small, so I set `dp = 
 Yes,my project include basic PID controler and parameters' mannual tuning and twiddle tuning.
 
 ### Describe the effect each of the P, I, D components had in your implementation.
-
+My final setting PID demo video is here: ![Alt text](https://github.com/wuqianliang/CarND-PID-Control-Project/blob/master/final.mp4 "here")
 ### Describe how the final hyperparameters were chosen.
 
 First I mannual tune to get a (0.03,0.004,0.5), then I run several time via the following loop :
 1. twiddle tuning
 2. set tuned parameters into  initial param for the next twiddle tune
-and get a final parameer: 
-
+and get a final parameer: (0.028215, 0.0042378, 0.4545)
 
 The twiddle tuning step:
 
