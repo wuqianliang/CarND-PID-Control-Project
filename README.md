@@ -54,4 +54,7 @@ Yes,my project include basic PID controler and parameters' mannual tuning and tw
 ### Describe the effect each of the P, I, D components had in your implementation.
 
 ### Describe how the final hyperparameters were chosen.
-
+First I mannual tune to get a (0.03,0.004,0.5), then I run several time via the following loop :
+1. twiddle tuning
+2. set tuned parameters into  initial param for the next twiddle tune
+and get a final parameer: 
