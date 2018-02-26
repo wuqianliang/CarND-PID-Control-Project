@@ -83,7 +83,8 @@ int main()
 
           // Calculate steering value (if reasonable error, returns between [-1, 1])
           steer_value = pid_steer.TotalError();
-
+          if (steer_value > 1) { steer_value = 1; }
+          if (steer_value < -1) { steer_value = -1; }
 
           // 
           double throttle = (1- fabs(steer_value))*0.3+0.2;
