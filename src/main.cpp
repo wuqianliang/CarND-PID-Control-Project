@@ -36,7 +36,7 @@ int main()
   PID pid_throttle;
   // TODO: Initialize the pid variable.
   // Mannual tuning P,I,D
-  //pid_steer.Init(0.1,0.0001,1.0); //40mph  throttle=0.3
+  pid_steer.Init(0.1,0.0001,1.0); //40mph  throttle=0.3
   //pid_steer.Init(0.1,0.0001,2.0); //33mph
   //pid_steer.Init(0.1,0.001,2.0);
   //pid_steer.Init(0.1,0.0001,0.1);
@@ -50,7 +50,7 @@ int main()
   //pid_steer.Init(0.04,0.0004,0.4); //50mph smoothly,big turn failed,  throttle = (1- fabs(steer_value))*0.3+0.2;
   //pid_steer.Init(0.04,0.003,0.4); //53mph smoothly,big turn success, occasionly failed, throttle = (1- fabs(steer_value))*0.3+0.2;
   //pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
-  pid_steer.Init(0.028125,0.0042378,0.4545);
+  //pid_steer.Init(0.028125,0.0042378,0.4545);
   // Twiddle 
   //pid_steer.is_twiddle=true;
 
@@ -87,7 +87,7 @@ int main()
           if (steer_value < -1) { steer_value = -1; }
 
           // 
-          double throttle = (1- fabs(steer_value))*0.3+0.2;
+          double throttle = 0.3;//(1- fabs(steer_value))*0.3+0.2;
           // DEBUG
           std::cout << speed << " CTE: " << cte << " Steering Value: " << steer_value << " Throttle: "<< throttle << std::endl;
 
