@@ -66,7 +66,7 @@ Because my  starting parameters point (0.03,0.004,0.5) is small, so I set `dp = 
 Yes,my project include basic PID controler and parameters' mannual tuning and twiddle tuning.
 
 ### Describe the effect each of the P, I, D components had in your implementation.
-My final setting PID demo video(on video weisite www.youku.com) is http://v.youku.com/v_show/id_XMzQyMzA1MDgyMA==.html 
+My final setting PID demo video(on video weisite www.youku.com) is http://v.youku.com/v_show/id_XMzQyNDk3MDY2OA==.html 
 ### Describe how the final hyperparameters were chosen.
 
 First I mannual tune to get a (0.03,0.004,0.5), then I run several time via the following loop :
