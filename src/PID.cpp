@@ -18,6 +18,7 @@ void PID::Init(double Kp, double Ki, double Kd) {
 	this->Kp = Kp;
 	this->Ki = Ki;
 	this->Kd = Kd;
+        p_error = d_error = i_error = 0.0;
 
     // Twiddling parameters
     is_twiddle = false;
@@ -58,7 +59,7 @@ void PID::UpdateError(double cte) {
             cout << "improvement!" << endl;
             best_error = update_error;
             //  Skip first time through
-            if (step >  (n_settle_steps + n_eval_steps)) {
+            if (step !=  (n_settle_steps + n_eval_steps)) {
                 dp[i_th_dp] *= 1.1;            
             }
             // next parameter

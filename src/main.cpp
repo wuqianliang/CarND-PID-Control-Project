@@ -4,6 +4,8 @@
 #include "PID.h"
 #include <math.h>
 
+#define PID_thro 1 // flag
+
 // for convenience
 using json = nlohmann::json;
 
@@ -28,34 +30,45 @@ std::string hasData(std::string s) {
   return "";
 }
 
+// Reset the car back to starting position, and it can be used in twiddle
+void Restart(uWS::WebSocket<uWS::SERVER> ws){
+  std::string reset_msg = "42[\"reset\",{}]";
+  ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
+}
+
+
 int main()
 {
   uWS::Hub h;
 
-  PID pid_steer;
-  PID pid_throttle;
+  PID pid_s;
   // TODO: Initialize the pid variable.
   // Mannual tuning P,I,D
-  pid_steer.Init(0.1,0.0001,1.0); //40mph  throttle=0.3
-  //pid_steer.Init(0.1,0.0001,2.0); //33mph
-  //pid_steer.Init(0.1,0.001,2.0);
-  //pid_steer.Init(0.1,0.0001,0.1);
-  //pid_steer.Init(0.01,0.0005,1.0);
-  //pid_steer.Init(0.01,0.001,2.0);
-  //pid_steer.Init(0.1,0.001,1.0);
-  //pid_steer.Init(0.1,0.00005,0.8); //43mph  throttle=0.5
-  //pid_steer.Init(0.1,0.00005,3.0); //28mph  throttle=0.5
-  //pid_steer.Init(0.05,0.00005,3.0); //33mph  throttle=0.5
-  //pid_steer.Init(0.05,0.00005,0.5); //43mph smoothly,  throttle = (1- fabs(steer_value))*0.3+0.1;
-  //pid_steer.Init(0.04,0.0004,0.4); //50mph smoothly,big turn failed,  throttle = (1- fabs(steer_value))*0.3+0.2;
-  //pid_steer.Init(0.04,0.003,0.4); //53mph smoothly,big turn success, occasionly failed, throttle = (1- fabs(steer_value))*0.3+0.2;
-  //pid_steer.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
-  //pid_steer.Init(0.028125,0.0042378,0.4545);
+  //pid_s.Init(0.1,0.0001,1.0); //40mph  throttle=0.3
+  //pid_s.Init(0.1,0.001,2.0);
+  //pid_s.Init(0.1,0.0001,0.1);
+  //pid_s.Init(0.01,0.0005,1.0);
+  //pid_s.Init(0.01,0.001,2.0);
+  //pid_s.Init(0.1,0.001,1.0);
+  pid_s.Init(0.1,0.00005,0.8); //43mph  throttle=0.5
+  //pid_s.Init(0.1,0.00005,3.0); //28mph  throttle=0.5
+  //pid_s.Init(0.05,0.00005,3.0); //33mph  throttle=0.5
+  //pid_s.Init(0.05,0.00005,0.5); //43mph smoothly,  throttle = (1- fabs(steer_value))*0.3+0.1;
+  //pid_s.Init(0.04,0.0004,0.4); //50mph smoothly,big turn failed,  throttle = (1- fabs(steer_value))*0.3+0.2;
+  //pid_s.Init(0.04,0.003,0.4); //53mph smoothly,big turn success, occasionly failed, throttle = (1- fabs(steer_value))*0.3+0.2;
+  //pid_s.Init(0.03,0.004,0.5); //55mph smoothly,big turn success,robust ,throttle = (1- fabs(steer_value))*0.3+0.2;
+  //pid_s.Init(0.028125,0.0042378,0.4545);
   // Twiddle 
-  //pid_steer.is_twiddle=true;
+  //pid_s.is_twiddle=true;
 
 
-  h.onMessage([&pid_steer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  PID pid_t;
+
+#if PID_thro
+  pid_t.Init(0.45, 0.000, 0.5);
+#endif
+
+  h.onMessage([&pid_s, &pid_t](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -71,6 +84,7 @@ int main()
           double speed = std::stod(j[1]["speed"].get<std::string>());
           double angle = std::stod(j[1]["steering_angle"].get<std::string>());
           double steer_value;
+          double throttle = 0.4;
           /*
           * TODO: Calcuate steering value here, remember the steering value is
           * [-1, 1].
@@ -79,17 +93,29 @@ int main()
           */
           
           // Update error values with cte
-          pid_steer.UpdateError(cte);
+          pid_s.UpdateError(cte);
 
           // Calculate steering value (if reasonable error, returns between [-1, 1])
-          steer_value = pid_steer.TotalError();
+          steer_value = pid_s.TotalError();
           if (steer_value > 1) { steer_value = 1; }
           if (steer_value < -1) { steer_value = -1; }
-
+#if PID_thro
+          double max_throttle = 0.8;
+          pid_t.UpdateError(fabs(cte));
+          throttle = (max_throttle - fabs(pid_t.TotalError()))*0.3+0.2;
+#endif
           // 
-          double throttle = 0.3;//(1- fabs(steer_value))*0.3+0.2;
+
           // DEBUG
-          std::cout << speed << " CTE: " << cte << " Steering Value: " << steer_value << " Throttle: "<< throttle << std::endl;
+          std::cout << "CTE: " << cte << std::endl;
+          std::cout << "s P: " << - pid_s.Kp * pid_s.p_error << std::endl;
+          std::cout << "s D: " << - pid_s.Kd * pid_s.d_error << std::endl;
+          std::cout << "s I: " << - pid_s.Ki * pid_s.i_error << std::endl;
+          std::cout << "t P: " << - pid_t.Kp * pid_t.p_error << std::endl;
+          std::cout << "t D: " << - pid_t.Kd * pid_t.d_error << std::endl;
+          std::cout << "t I: " << - pid_t.Ki * pid_t.i_error << std::endl;
+          std::cout << "steer : " << steer_value << std::endl;
+          std::cout << "throttle : " << throttle << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
